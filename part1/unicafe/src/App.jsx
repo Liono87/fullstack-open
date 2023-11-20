@@ -7,9 +7,10 @@ const Button = ({ handleClick, text }) => (
 
 // StatisticLine component to display individual statistic
 const StatisticLine = ({ text, value, isPercentage }) => (
-  <p>
-    {text} {isPercentage ? `${value} %` : value}
-  </p>
+  <tr>
+    <td>{text}</td>
+    <td>{isPercentage ? `${value} %` : value}</td>
+  </tr>
 );
 
 const Statistics = ({ good, neutral, bad }) => {
@@ -22,16 +23,20 @@ const Statistics = ({ good, neutral, bad }) => {
     return (
       <div>
         <h2>statistics</h2>
-        <StatisticLine text='good' value={good} />
-        <StatisticLine text='neutral' value={neutral} />
-        <StatisticLine text='bad' value={bad} />
-        <StatisticLine text='all' value={totalClicks} />
-        <StatisticLine text='average' value={average} />
-        <StatisticLine
-          text='positive'
-          value={positivePercentage}
-          isPercentage
-        />
+        <table>
+          <tbody>
+            <StatisticLine text='good' value={good} />
+            <StatisticLine text='neutral' value={neutral} />
+            <StatisticLine text='bad' value={bad} />
+            <StatisticLine text='all' value={totalClicks} />
+            <StatisticLine text='average' value={average} />
+            <StatisticLine
+              text='positive'
+              value={positivePercentage}
+              isPercentage
+            />
+          </tbody>
+        </table>
       </div>
     );
   } else {
