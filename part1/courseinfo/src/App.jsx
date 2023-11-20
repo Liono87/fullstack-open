@@ -36,7 +36,7 @@ const Total = (props) => {
   );
 };
 
-function App() {
+const App = () => {
   const course = {
     name: 'Half Stack application development',
     parts: [
@@ -62,6 +62,6 @@ function App() {
       <Total parts={course.parts} />
     </>
   );
-}
+};
 
 export default App;
