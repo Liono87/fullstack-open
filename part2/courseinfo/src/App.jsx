@@ -30,12 +30,17 @@ const Course = ({ course }) => {
 
   // TotalExercises component to calculate and display the total exercises
   const TotalExercises = ({ parts }) => {
-    let totalExercises = 0;
+    /* let totalExercises = 0;
 
     for (let i = 0; i < parts.length; i++) {
       totalExercises += parts[i].exercises;
     }
+ */
 
+    const totalExercises = parts.reduce(
+      (total, part) => total + part.exercises,
+      0,
+    );
     return <p>total of {totalExercises} exercises</p>;
   };
 
