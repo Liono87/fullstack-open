@@ -6,6 +6,7 @@ const Course = ({ course }) => {
     return <h1>{name}</h1>;
   };
 
+  //
   // Content component containing multiple Part components
   const Content = ({ parts }) => {
     return (
@@ -27,11 +28,23 @@ const Course = ({ course }) => {
     );
   };
 
+  // TotalExercises component to calculate and display the total exercises
+  const TotalExercises = ({ parts }) => {
+    let totalExercises = 0;
+
+    for (let i = 0; i < parts.length; i++) {
+      totalExercises += parts[i].exercises;
+    }
+
+    return <p>total of {totalExercises} exercises</p>;
+  };
+
   // Rendering Course, including Header and Content
   return (
     <div>
       <Header />
       <Content parts={parts} />
+      <TotalExercises parts={parts} />
     </div>
   );
 };
@@ -57,6 +70,11 @@ const App = () => {
         name: 'State of a component',
         exercises: 14,
         id: 3,
+      },
+      {
+        name: 'Redux',
+        exercises: 11,
+        id: 4,
       },
     ],
   };
