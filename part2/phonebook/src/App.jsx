@@ -10,11 +10,19 @@ const App = () => {
 
   const addPerson = (event) => {
     event.preventDefault(); // Prevent default form submission
-    const personObject = {
-      name: newName,
-    };
-    setPersons([...persons, personObject]);
-    setNewName(''); // Clear the input field after adding the name
+
+    // Check if the name already exists in the phonebook
+    const nameExists = persons.some((person) => person.name === newName);
+
+    if (nameExists) {
+      alert(`${newName} is already added to phonebook`);
+    } else {
+      const personObject = {
+        name: newName,
+      };
+      setPersons([...persons, personObject]);
+      setNewName(''); // Clear the input field after adding the name
+    }
   };
 
   return (
