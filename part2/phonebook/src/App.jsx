@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
-import axios from 'axios';
+import personService from './services/Persons';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
@@ -10,7 +10,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  useEffect(() => {
+  /*   useEffect(() => {
     console.log('effect');
     axios
       .get('http://localhost:3001/persons')
@@ -20,6 +20,17 @@ const App = () => {
       })
       .catch((error) => {
         console.error('Error fetching data: ', error);
+      });
+  }, []); */
+
+  useEffect(() => {
+    personService
+      .getAll()
+      .then((response) => {
+        setPersons(response.data);
+      })
+      .catch((error) => {
+        console.log('Error fetching data: ', error);
       });
   }, []);
 
@@ -46,7 +57,6 @@ const App = () => {
   fetchData();
 }, []);
 
-  
   */
 
   const handleNameChange = (event) => {
@@ -61,6 +71,7 @@ const App = () => {
     setSearchTerm(event.target.value);
   };
 
+  /*
   const addPerson = async (event) => {
     event.preventDefault(); // Prevent default form submission
 
@@ -89,13 +100,40 @@ const App = () => {
     } catch (error) {
       console.log(error.message);
     }
+  }; */
+
+  const addPerson = async (event) => {
+    event.preventDefault();
+
+    try {
+      const nameExists = persons.some((person) => person.name === newName);
+
+      if (nameExists) {
+        const updatedPersons = persons.map((person) =>
+          person.name === newName ? { ...person, number: newNumber } : person,
+        );
+        setPersons(updatedPersons);
+      } else {
+        const newPerson = {
+          name: newName,
+          number: newNumber,
+        };
+        await personService.create(newPerson);
+        const updatedPersons = await personService.getAll();
+        setPersons(updatedPersons.data);
+      }
+      setNewName('');
+      setNewNumber('');
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   const filteredPersons = persons.filter((person) =>
     person.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  // Create a function to save data
+  /*   // Create a function to save data
   const savePerson = async (name, number) => {
     try {
       const response = await axios.post('http://localhost:3001/persons', {
@@ -107,7 +145,7 @@ const App = () => {
       console.log('Error saving person: ', error);
       throw error;
     }
-  };
+  }; */
 
   return (
     <div>
