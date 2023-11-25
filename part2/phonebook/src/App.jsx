@@ -1,28 +1,18 @@
+// Import necessary components and services
 import { useState, useEffect } from 'react';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
-import personService from './services/Persons';
+import personService from './services/personService'; // Import the service
 
 const App = () => {
+  // State variables for managing persons, new name, new number, and search term
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
-  /*   useEffect(() => {
-    console.log('effect');
-    axios
-      .get('http://localhost:3001/persons')
-      .then((response) => {
-        console.log('promise fulfilled');
-        setPersons(response.data);
-      })
-      .catch((error) => {
-        console.error('Error fetching data: ', error);
-      });
-  }, []); */
-
+  // Fetch initial data from the backend using useEffect
   useEffect(() => {
     personService
       .getAll()
@@ -34,74 +24,39 @@ const App = () => {
       });
   }, []);
 
-  /* 
-  
-  useEffect(() => {
-  console.log('effect');
+  // Function to handle deletion of a person
+  const handleDelete = (id, name) => {
+    const confirmDeletion = window.confirm(`Delete ${name}`);
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get('http://localhost:3001/persons');
-      const data = response.data;
-
-      for (let i = 0; i < data.length; i++) {
-        setTimeout(() => {
-          setPersons((prevPersons) => [...prevPersons, data[i]]);
-        }, (i + 1) * 2000); // 2-second delay between each item
-      }
-    } catch (error) {
-      console.error('Error fetching data: ', error);
+    if (confirmDeletion) {
+      personService
+        .deletePerson(id)
+        .then(() => {
+          const updatedPersons = persons.filter((person) => person.id !== id);
+          setPersons(updatedPersons);
+        })
+        .catch((error) => {
+          console.error('Error deleting person: ', error);
+        });
     }
   };
 
-  fetchData();
-}, []);
-
-  */
-
+  // Function to handle name change input
   const handleNameChange = (event) => {
     setNewName(event.target.value);
   };
 
+  // Function to handle number change input
   const handleNumberChange = (event) => {
     setNewNumber(event.target.value);
   };
 
+  // Function to handle search input
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
   };
 
-  /*
-  const addPerson = async (event) => {
-    event.preventDefault(); // Prevent default form submission
-
-    try {
-      const nameExists = persons.some((person) => person.name === newName);
-
-      if (nameExists) {
-        // Update existing person's number
-        const updatedPersons = persons.map((person) =>
-          person.name === newName ? { ...person, number: newNumber } : person,
-        );
-        setPersons(updatedPersons);
-      } else {
-        // Save a new person
-        await savePerson(newName, newNumber);
-        const personObject = {
-          name: newName,
-          number: newNumber,
-          id: persons.length + 1,
-        };
-        setPersons([...persons, personObject]);
-      }
-
-      setNewName('');
-      setNewNumber('');
-    } catch (error) {
-      console.log(error.message);
-    }
-  }; */
-
+  // Function to add a new person
   const addPerson = async (event) => {
     event.preventDefault();
 
@@ -129,24 +84,12 @@ const App = () => {
     }
   };
 
+  // Filter the persons based on the search term
   const filteredPersons = persons.filter((person) =>
     person.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  /*   // Create a function to save data
-  const savePerson = async (name, number) => {
-    try {
-      const response = await axios.post('http://localhost:3001/persons', {
-        name: name,
-        number: number,
-      });
-      return response.data; // Optionally return data after saving
-    } catch (error) {
-      console.log('Error saving person: ', error);
-      throw error;
-    }
-  }; */
-
+  // Return JSX with components and data passed as props
   return (
     <div>
       <h2>Phonebook</h2>
@@ -165,7 +108,7 @@ const App = () => {
 
       <h3>Numbers</h3>
 
-      <Persons filteredPersons={filteredPersons} />
+      <Persons filteredPersons={filteredPersons} handleDelete={handleDelete} />
     </div>
   );
 };
