@@ -2,7 +2,7 @@
 const Filter = ({ searchTerm, handleSearch }) => {
   return (
     <div>
-      Filter shown with
+      Filter shown with&nbsp;
       <input
         value={searchTerm}
         onChange={handleSearch}

@@ -9,7 +9,7 @@ const PersonForm = ({
   return (
     <form onSubmit={addPerson}>
       <div>
-        name:
+        name: &nbsp;
         <input
           id='nameInput'
           name='name'
@@ -18,7 +18,7 @@ const PersonForm = ({
         />
       </div>
       <div>
-        number:
+        number: &nbsp;
         <input
           id='numberInput'
           name='number'
