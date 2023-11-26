@@ -61,13 +61,21 @@ const App = () => {
     event.preventDefault();
 
     try {
-      const nameExists = persons.some((person) => person.name === newName);
+      const existingPerson = persons.find((person) => person.name === newName);
 
-      if (nameExists) {
-        const updatedPersons = persons.map((person) =>
-          person.name === newName ? { ...person, number: newNumber } : person,
+      if (existingPerson) {
+        const confirmUpdate = window.confirm(
+          `${newName} is already added to the phonebook. Replace the old number with a new one?`,
         );
-        setPersons(updatedPersons);
+
+        if (confirmUpdate) {
+          await personService.update(existingPerson.id, {
+            ...existingPerson,
+            number: newNumber,
+          });
+          const updatedPersons = await personService.getAll();
+          setPersons(updatedPersons.data);
+        }
       } else {
         const newPerson = {
           name: newName,
