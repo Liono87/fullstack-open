@@ -13,6 +13,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   // Fetch initial data from the backend using useEffect
   useEffect(() => {
@@ -25,7 +26,7 @@ const App = () => {
         setErrorMessage('Error fetching data: ' + error.message);
         setTimeout(() => {
           setErrorMessage(null);
-        }, 5000);
+        }, 15000);
       });
   }, []);
 
@@ -39,19 +40,20 @@ const App = () => {
         .then(() => {
           const updatedPersons = persons.filter((person) => person.id !== id);
           setPersons(updatedPersons);
+          setIsDeleted(true);
           setErrorMessage({
             message: `Deleted ${name} from the phonebook`,
             type: 'delete',
           });
           setTimeout(() => {
             setErrorMessage(null);
-          }, 5000);
+          }, 1000);
         })
         .catch((error) => {
           setErrorMessage('Error fetching data: ' + error.message);
           setTimeout(() => {
             setErrorMessage(null);
-          }, 5000);
+          }, 15000);
         });
     }
   };
@@ -76,7 +78,23 @@ const App = () => {
     event.preventDefault();
 
     try {
-      const existingPerson = persons.find((person) => person.name === newName);
+      if (isDeleted) {
+        setErrorMessage({
+          message: `Information of ${newName} has already been deleted from the server`,
+          type: 'updateDeleted', // Specify the type for attempting to update a deleted entry
+        });
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 15000);
+        // Reset the deletion flag
+        setIsDeleted(false);
+        // Exit the function
+        return;
+      }
+
+      const existingPerson = persons.find(
+        (person) => person.name.toLowerCase() === newName.toLowerCase(),
+      );
 
       if (existingPerson) {
         const confirmUpdate = window.confirm(
@@ -88,12 +106,13 @@ const App = () => {
             ...existingPerson,
             number: newNumber,
           });
+
           const updatedPersons = await personService.getAll();
           setPersons(updatedPersons.data);
-          setErrorMessage(`Updated ${newName} to the phonebook`);
+          setErrorMessage({ message: `Updated ${newName}`, type: 'success' });
           setTimeout(() => {
             setErrorMessage(null);
-          }, 5000);
+          }, 15000);
         }
       } else {
         const newPerson = {
@@ -103,21 +122,21 @@ const App = () => {
         await personService.create(newPerson);
         const updatedPersons = await personService.getAll();
         setPersons(updatedPersons.data);
-        setErrorMessage({
-          message: `Added ${newName} to the phonebook`,
-          type: 'add',
-        });
+        setErrorMessage({ message: `Added ${newName}`, type: 'add' });
         setTimeout(() => {
           setErrorMessage(null);
-        }, 5000);
+        }, 10000);
       }
       setNewName('');
       setNewNumber('');
     } catch (error) {
-      setErrorMessage('Error adding/updating person: ' + error.message);
+      setErrorMessage({
+        message: 'Error adding/updating person: ' + error.message,
+        type: 'error',
+      });
       setTimeout(() => {
         setErrorMessage(null);
-      }, 5000);
+      }, 15000);
     }
   };
 

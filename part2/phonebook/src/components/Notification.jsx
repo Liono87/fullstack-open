@@ -5,6 +5,9 @@ const Notification = ({ message }) => {
     notificationClass = 'success'; // Apply a different class for added entries
   } else if (message && message.type === 'delete') {
     notificationClass = 'deleted'; // Apply a different class for deleted entries
+  } else if (message && message.type === 'updateDeleted') {
+    notificationClass = 'deleted';
+    // Apply a different class for attempting to update a deleted entry
   }
 
   if (!message) {
