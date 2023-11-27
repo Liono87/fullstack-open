@@ -4,6 +4,7 @@ import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
 import personService from './services/personService'; // Import the service
+import Notification from './components/Notification';
 
 const App = () => {
   // State variables for managing persons, new name, new number, and search term
@@ -11,6 +12,7 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [errorMessage, setErrorMessage] = useState(null);
 
   // Fetch initial data from the backend using useEffect
   useEffect(() => {
@@ -20,7 +22,10 @@ const App = () => {
         setPersons(response.data);
       })
       .catch((error) => {
-        console.log('Error fetching data: ', error);
+        setErrorMessage('Error fetching data: ' + error.message);
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
       });
   }, []);
 
@@ -34,9 +39,19 @@ const App = () => {
         .then(() => {
           const updatedPersons = persons.filter((person) => person.id !== id);
           setPersons(updatedPersons);
+          setErrorMessage({
+            message: `Deleted ${name} from the phonebook`,
+            type: 'delete',
+          });
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
         })
         .catch((error) => {
-          console.error('Error deleting person: ', error);
+          setErrorMessage('Error fetching data: ' + error.message);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
         });
     }
   };
@@ -75,6 +90,10 @@ const App = () => {
           });
           const updatedPersons = await personService.getAll();
           setPersons(updatedPersons.data);
+          setErrorMessage(`Updated ${newName} to the phonebook`);
+          setTimeout(() => {
+            setErrorMessage(null);
+          }, 5000);
         }
       } else {
         const newPerson = {
@@ -84,11 +103,21 @@ const App = () => {
         await personService.create(newPerson);
         const updatedPersons = await personService.getAll();
         setPersons(updatedPersons.data);
+        setErrorMessage({
+          message: `Added ${newName} to the phonebook`,
+          type: 'add',
+        });
+        setTimeout(() => {
+          setErrorMessage(null);
+        }, 5000);
       }
       setNewName('');
       setNewNumber('');
     } catch (error) {
-      console.log(error.message);
+      setErrorMessage('Error adding/updating person: ' + error.message);
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
     }
   };
 
@@ -101,6 +130,8 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+
+      <Notification message={errorMessage} />
 
       <Filter searchTerm={searchTerm} handleSearch={handleSearch} />
 
