@@ -22,6 +22,11 @@ let persons = [
     name: 'Mary Poppendieck',
     number: '39-23-6423122',
   },
+  {
+    id: 5,
+    name: 'Matt Daemon',
+    number: '123-456789',
+  },
 ];
 
 app.get('/api/persons', (request, response) => {
@@ -39,13 +44,27 @@ app.get('/info', (request, response) => {
 
 app.get('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id);
-  const foundPersson = persons.find((person) => person.id === id);
+  const foundPerson = persons.find((person) => person.id === id);
 
-  if (foundPersson) {
-    response.json(foundPersson);
+  if (foundPerson) {
+    response.json(foundPerson);
   } else {
     //response.status(404).send('Entry not found');
     response.status(404).end();
+  }
+});
+
+// DELETE endpoint
+app.delete('/api/persons/:id', (request, response) => {
+  const id = Number(request.params.id);
+  const initialLength = persons.length;
+
+  persons = persons.filter((person) => person.id !== id);
+
+  if (initialLength === persons.length) {
+    response.status(404).send('Entry not found');
+  } else {
+    response.status(204).end();
   }
 });
 
