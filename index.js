@@ -1,7 +1,49 @@
 const express = require('express');
+const morgan = require('morgan');
+
 const app = express();
+app.use(morgan('tiny'));
+
+// Use morgan middleware with custom token format
+app.use(
+  morgan((tokens, req, res) => {
+    const requestBody = req.method === 'POST' ? JSON.stringify(req.body) : '';
+    return [
+      tokens.method(req, res),
+      tokens.url(req, res),
+      tokens.status(req, res),
+      tokens.res(req, res, 'content-length'),
+      '-',
+      tokens['response-time'](req, res),
+      'ms',
+      requestBody, // Log request body for POST requests
+    ].join(' ');
+  }),
+);
+
+// Custom Middleware
+/* const requestLogger = (request, response, next) => {
+  console.log('Method: ', request.method);
+  console.log('Path: ', request.path);
+  console.log('Body: ', request.body);
+  console.log('---');
+  next();
+}; */
 
 // Middleware to parse JSON in requests
+/* const requestLogger = (request, response, next) => {
+  console.log('Method: ', request.method);
+  console.log('Path: ', request.path);
+
+  if (request.method !== 'GET') {
+    console.log('Body: ', request.body);
+  }
+
+  console.log('---');
+  next();
+}; */
+//app.use(requestLogger);
+
 app.use(express.json());
 
 let persons = [
@@ -100,6 +142,12 @@ const generateId = () => {
     persons.length > 0 ? Math.max(...persons.map((person) => person.id)) : 0;
   return Math.floor(Math.random() * (10000 - maxId) + maxId + 1); // Generate a random ID
 };
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' });
+};
+
+app.use(unknownEndpoint);
 
 const PORT = 3001;
 app.listen(PORT, () => {
