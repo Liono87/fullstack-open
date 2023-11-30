@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 
+// Middleware to parse JSON in requests
+app.use(express.json());
+
 let persons = [
   {
     id: 1,
@@ -67,6 +70,31 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).end();
   }
 });
+
+// POST endpoint
+app.post('/api/persons', (request, response) => {
+  const body = request.body;
+
+  if (!body || !body.name || !body.number) {
+    return response.status(400).json({ error: 'Name or Number missing' });
+  }
+
+  const newPerson = {
+    id: generateId(), // Generate a new id for the entry
+    name: body.name,
+    number: body.number,
+  };
+
+  persons = persons.concat(newPerson);
+
+  response.json(newPerson);
+});
+
+const generateId = () => {
+  const maxId =
+    persons.length > 0 ? Math.max(...persons.map((person) => person.id)) : 0;
+  return Math.floor(Math.random() * (10000 - maxId) + maxId + 1); // Generate a random ID
+};
 
 const PORT = 3001;
 app.listen(PORT, () => {
